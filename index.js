@@ -14,7 +14,7 @@ app.use(cors({
     'https://effulgent-moonbeam-41ff3e.netlify.app',
 
   ],
-  credentials: true // Allow credentials for cookies, authorization headers, or TLS client certificates
+  credentials: true // Allow credentials for cookies, authorization headers,
 }));
 app.use(express.json())
 
@@ -155,6 +155,22 @@ async function run() {
         res.status(500).send({ message: "Failed to retrieve worker applications", error: error.message });
       }
     });
+
+    // Delete worker application by ID
+    app.delete('/worker/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      try {
+        const result = await allWorker.deleteOne(query);
+        if (result.deletedCount === 0) {
+          return res.status(404).send({ message: "Worker application not found" });
+        }
+        res.send({ message: "Worker application deleted successfully" });
+      } catch (error) {
+        res.status(500).send({ message: "Failed to delete worker application", error: error.message });
+      }
+    });
+
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
